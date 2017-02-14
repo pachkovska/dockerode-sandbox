@@ -1,5 +1,5 @@
 # dockerode-example
-Some examples on Docker-related automation with Node.js and [dockerode](https://www.npmjs.com/package/dockerode).
+Example of Docker automation with Node.js and [dockerode](https://www.npmjs.com/package/dockerode).
 
 Currently it builds a custom nginx image, creates a local network and creates a container on that network with host port mapping.
 
