@@ -1,0 +1,15 @@
+{
+    "name": "dockerode-test",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "dockerode": "^2.3.1",
+        "tar-fs": "^1.15.0"
+    }
+}
