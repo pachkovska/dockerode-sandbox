@@ -9,4 +9,4 @@ To run this example you need Docker (tested with 1.13.1 on linux) and Node.js in
 ## Running
 `npm install && npm start`
 
-Then check if nginx is running on http://localhost 
+Then check if nginx is running on [http://localhost](http://localhost ) 
