@@ -1,8 +1,7 @@
 'use strict'
-const Docker = require('dockerode');
 const tar = require('tar-fs');
 
-// https://github.com/apocas/dockerode
+const Docker = require('dockerode');
 const docker = new Docker();
 
 let imageTag = 'our_nginx_image';
@@ -21,6 +20,13 @@ buildImage(imageTag, process.cwd()).then(() => {
     console.log(`Something went wrong: ${err.stack}`);
 });
 
+/**
+ * Creates the container.
+ * @param  {String} image The image to be used.
+ * @param  {String} containerName A name for the container
+ * @param  {String} networkName the docker network to be used.
+ * @return {Promise} A primise to retreive a container.
+ */
 function createContainer(image, containerName, networkName) {
     return new Promise(function(resolve, reject) {
         let hostConfig = {
