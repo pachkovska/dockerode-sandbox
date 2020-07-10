@@ -1,23 +1,26 @@
-'use strict'
-const tar = require('tar-fs');
-
 const Docker = require('dockerode');
 const docker = new Docker();
 
-let imageTag = 'our_nginx_image';
-let networkName = 'our_network';
-let containerName = 'our_container';
+let imageTag = 'node';
+let networkName = 'node_network_10';
+let containerName = 'node_container_10';
 
 buildImage(imageTag, process.cwd()).then(() => {
+
     console.log('Image built.');
     return createNetwork(networkName);
+
 }).then(() => {
+
     console.log('Network created.');
     return createContainer(imageTag, containerName, networkName);
+
 }).then(() => {
+
     console.log('Container created.');
+
 }).catch((err) => {
-    console.log(`Something went wrong: ${err.stack}`);
+    console.log(`Something went wrong: ${err}`);
 });
 
 /**
@@ -25,16 +28,16 @@ buildImage(imageTag, process.cwd()).then(() => {
  * @param  {String} image The image to be used.
  * @param  {String} containerName A name for the container
  * @param  {String} networkName the docker network to be used.
- * @return {Promise} A primise to retreive a container.
+ * @return {Promise} A promise to retrieve a container.
  */
 function createContainer(image, containerName, networkName) {
     return new Promise(function(resolve, reject) {
         let hostConfig = {
             NetworkMode: networkName,
             PortBindings: {
-                "80/tcp": [
+                "8080/tcp": [
                     {
-                        "HostPort": "80",
+                        "HostPort": "8080",
                         "HostIp": "0.0.0.0"
                     }
                 ]
@@ -89,10 +92,12 @@ function createNetwork(networkName) {
  * @param  {String} buildContextLocation Path to the Docker build context.
  * @return {Promise}  A promise.
  */
-function buildImage(tag, buildContextLocation) {
+function buildImage(tag, imageLocation) {
     return new Promise(function(resolve, reject) {
-        var tarStream = tar.pack(buildContextLocation);
-        docker.buildImage(tarStream, {
+        docker.buildImage({
+            context: imageLocation,
+            src: ['Dockerfile'],
+        }, {
             t: tag
         }, function(err, stream) {
             if (err) {
