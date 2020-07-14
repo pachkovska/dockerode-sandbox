@@ -2,8 +2,9 @@ const Docker = require('dockerode');
 const docker = new Docker();
 
 let imageTag = 'node';
-let networkName = 'node_network_10';
-let containerName = 'node_container_10';
+let networkName = 'node_network_12';
+let containerName = 'node_container_12';
+let currentContainer;
 
 buildImage(imageTag, process.cwd()).then(() => {
 
@@ -12,13 +13,15 @@ buildImage(imageTag, process.cwd()).then(() => {
 
 }).then(() => {
 
-    console.log('Network created.');
+    console.log('Network created.',);
     return createContainer(imageTag, containerName, networkName);
 
-}).then(() => {
+}).then((containerInfo) => {
 
-    console.log('Container created.');
-
+    console.log('Container created.', containerInfo);
+    currentContainer = docker.getContainer(containerInfo.id)
+    currentContainer.kill();
+    currentContainer.remove();
 }).catch((err) => {
     console.log(`Something went wrong: ${err}`);
 });
@@ -33,6 +36,7 @@ buildImage(imageTag, process.cwd()).then(() => {
 function createContainer(image, containerName, networkName) {
     return new Promise(function(resolve, reject) {
         let hostConfig = {
+            AutoRemove: true,
             NetworkMode: networkName,
             PortBindings: {
                 "8080/tcp": [
@@ -96,7 +100,7 @@ function buildImage(tag, imageLocation) {
     return new Promise(function(resolve, reject) {
         docker.buildImage({
             context: imageLocation,
-            src: ['Dockerfile'],
+            src: ['Dockerfile', 'index.js', 'package.json'],
         }, {
             t: tag
         }, function(err, stream) {

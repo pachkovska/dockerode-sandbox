@@ -6,7 +6,7 @@
     "scripts": {
         "start": "node index.js"
     },
-    "author": "",
+    "author": "Yulia",
     "license": "ISC",
     "dependencies": {
         "dockerode": "^2.3.1"

@@ -1,14 +1,9 @@
 FROM node:11
 
-RUN apt update
-#RUN apt install -y nano git mc
+RUN mkdir -p srv/app
 
-RUN mkdir -p srv
+WORKDIR /srv/app
 
-WORKDIR /srv
-
-COPY package.json ./
+COPY ./ /srv/app/
 
 RUN npm install
-
-EXPOSE 8080
