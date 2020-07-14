@@ -24,7 +24,5 @@ The command is also specified in the Dockerfile.
 
 
 
-
-
-
-
+## Running
+`npm install && npm start`
