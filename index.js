@@ -2,26 +2,26 @@ const Docker = require('dockerode');
 const docker = new Docker();
 
 let imageTag = 'node';
-let networkName = 'node_network_12';
-let containerName = 'node_container_12';
-let currentContainer;
+let networkName = 'node_network';
+let containerName = 'node_container_1';
+let testFile = 'test/test.json';
 
-buildImage(imageTag, process.cwd()).then(() => {
+buildImage(imageTag, process.cwd(), testFile).then(() => {
 
     console.log('Image built.');
     return createNetwork(networkName);
 
 }).then(() => {
 
-    console.log('Network created.',);
+    console.log('Network created.');
     return createContainer(imageTag, containerName, networkName);
 
-}).then((containerInfo) => {
+}).then((container) => {
 
-    console.log('Container created.', containerInfo);
-    currentContainer = docker.getContainer(containerInfo.id)
-    currentContainer.kill();
-    currentContainer.remove();
+    // console.log('Container created.', containerInfo);
+    console.log('Container created.');
+    // container.stop(); //commented out for now, but it stops container and this container get auto-removed.
+    console.log("container stopped")
 }).catch((err) => {
     console.log(`Something went wrong: ${err}`);
 });
@@ -36,7 +36,7 @@ buildImage(imageTag, process.cwd()).then(() => {
 function createContainer(image, containerName, networkName) {
     return new Promise(function(resolve, reject) {
         let hostConfig = {
-            AutoRemove: true,
+            AutoRemove: true, // I added this to remove container. It will work only after container has been stopped.
             NetworkMode: networkName,
             PortBindings: {
                 "8080/tcp": [
@@ -70,12 +70,32 @@ function createContainer(image, containerName, networkName) {
     });
 }
 
+async function checkForNetwork(networkName) {
+    const listNetworks = await docker.listNetworks();
+    for (let network of listNetworks) {
+        console.log(network.Name);
+        if (networkName === network.Name) return true;
+    }
+    return false;
+}
+
+async function checkForImage(imageTag) {
+    const listImages = await docker.listImages();
+    for (let image of listImages) {
+        console.log(image.RepoTags);
+        // if (networkName === network.Name) return true;
+    }
+    // return false;
+}
+
 /**
  * Creates a local docker network.
  * @param  {String} networkName Name of the network to be created.
  * @return {Promise}  A promise.
  */
-function createNetwork(networkName) {
+async function createNetwork(networkName) {
+    const listNetworks = await docker.listNetworks();
+    if (listNetworks.length > 3 && checkForNetwork(networkName)) return networkName;
     return new Promise(function(resolve, reject) {
         docker.createNetwork({
             "Name": networkName,
@@ -96,11 +116,13 @@ function createNetwork(networkName) {
  * @param  {String} buildContextLocation Path to the Docker build context.
  * @return {Promise}  A promise.
  */
-function buildImage(tag, imageLocation) {
+async function buildImage(tag, imageLocation, testFile) {
+    const listImages = await docker.listImages();
+    if (listImages.length > 0) return checkForImage(tag);
     return new Promise(function(resolve, reject) {
         docker.buildImage({
             context: imageLocation,
-            src: ['Dockerfile', 'index.js', 'package.json'],
+            src: ['Dockerfile', 'index.js', 'package.json', testFile],
         }, {
             t: tag
         }, function(err, stream) {

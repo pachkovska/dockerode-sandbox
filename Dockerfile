@@ -1,4 +1,4 @@
-FROM node:11
+FROM node:latest
 
 RUN mkdir -p srv/app
 
