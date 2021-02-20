@@ -20,7 +20,7 @@ buildImage(imageTag, process.cwd(), testFile).then(() => {
 
     // console.log('Container created.', containerInfo);
     console.log('Container created.');
-    // container.stop(); //commented out for now, but it stops container and this container get auto-removed.
+    container.stop(); //commented out for now, but it stops container and this container get auto-removed.
     console.log("container stopped")
 }).catch((err) => {
     console.log(`Something went wrong: ${err}`);
