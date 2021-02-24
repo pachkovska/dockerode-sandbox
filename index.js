@@ -18,8 +18,8 @@ buildImage(imageTag, process.cwd(), testFile).then(() => {
 
 }).then((container) => {
 
-    // console.log('Container created.', containerInfo);
-    console.log('Container created.');
+    console.log('Container created.', container);
+//     console.log('Container created.');
     container.stop(); //commented out for now, but it stops container and this container get auto-removed.
     console.log("container stopped")
 }).catch((err) => {
